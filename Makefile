@@ -4,7 +4,7 @@ MKDIR=mkdir -p
 
 # Flags
 LIBS=lua raylib
-CFLAGS=`pkg-config --cflags $(LIBS)`
+CFLAGS=`pkg-config --cflags $(LIBS)` -W -Wall
 LDFLAGS=`pkg-config --libs $(LIBS)`
 
 # Compiler
@@ -33,7 +33,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Run, tests and debug
-run: $(BUILDDIR)/$(OUTPUT)
+run: $(BUILDDIR) $(BUILDDIR)/$(OUTPUT)
 	$(BUILDDIR)/$(OUTPUT)
 .PHONY: run
 
