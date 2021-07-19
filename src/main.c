@@ -2,6 +2,7 @@
 
 #include "global_variables.h"
 #include "g_state.h"
+#include "w_console.h"
 
 GameState st;
 
@@ -14,10 +15,13 @@ int main(void)
     st.running = true;
     while(st.running) {
         st.running = !WindowShouldClose();
+        w_console_update();
 
         BeginDrawing();
-            ClearBackground(RAYWHITE);
+            ClearBackground(WHITE);
             DrawFPS(0, 0);
+
+            w_console_draw();
         EndDrawing();
     }
 
