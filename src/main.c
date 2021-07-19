@@ -18,7 +18,7 @@ int main(void)
         w_console_update();
 
         BeginDrawing();
-            ClearBackground(WHITE);
+            ClearBackground(DARKBLUE);
             DrawFPS(0, 0);
 
             w_console_draw();
