@@ -24,7 +24,7 @@ clean:
 .PHONY: clean
 
 $(BUILDDIR)/$(OUTPUT): $(OBJS)
-	$(CC) $< -o $(BUILDDIR)/$(OUTPUT) $(LDFLAGS)
+	$(CC) $(OBJS) -o $(BUILDDIR)/$(OUTPUT) $(LDFLAGS)
 
 $(BUILDDIR):
 	$(MKDIR) $(BUILDDIR)
