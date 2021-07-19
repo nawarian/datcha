@@ -2,7 +2,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <lua.h>
+#include <lauxlib.h>
 
+#include "global_variables.h"
 #include "w_console.h"
 
 struct {
@@ -28,14 +31,15 @@ void w_console_update(void)
     if (IsKeyPressed(KEY_ENTER)) {
         // User sent a text: handle message and clear buffer
         if (ConsoleState.typing) {
-            // Broadcast (debug only)
-            TraceLog(LOG_INFO, "[Broadcast] %s", ConsoleState.buff);
-
             // log message to game console
             strcpy(ConsoleState.log[ConsoleState.log_pos++], ConsoleState.buff);
 
             // delegate to LUA handler(s)
-            // TODO
+            lua_getglobal(lua, "onMessage");
+            lua_pushstring(lua, ConsoleState.buff);
+            if (lua_pcall(lua, 1, 1, 0) != 0) {
+                TraceLog(LOG_ERROR, "Lua error: %s", lua_tostring(lua, -1));
+            }
 
             // clear buffer, cursor and reset scroll
             while (ConsoleState.cursor_pos > 0) {

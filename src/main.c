@@ -53,6 +53,7 @@ bool _load_lua_script(const char *filename)
     switch (result) {
         case LUA_OK:
             TraceLog(LOG_INFO, "Loaded file 'console.lua'");
+            lua_pcall(lua, 0, 0, 0);
             return true;
         default:
             if (result == LUA_ERRSYNTAX) reason_phrase = "Syntax error";
