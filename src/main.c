@@ -52,7 +52,7 @@ bool _load_lua_script(const char *filename)
 
     switch (result) {
         case LUA_OK:
-            TraceLog(LOG_INFO, "Loaded file 'console.lua'");
+            TraceLog(LOG_INFO, "Loaded file '%s'", filename);
             lua_pcall(lua, 0, 0, 0);
             return true;
         default:
