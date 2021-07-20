@@ -1,4 +1,5 @@
 Console = { }
+Console.__index = Console
 
 function Console:new()
     c = c or {}
@@ -9,6 +10,6 @@ function Console:new()
 end
 
 function Console:handleRawMessage(text)
-    print("[Broadcast] " .. text)
+    player:say(chat_global, text)
 end
 
