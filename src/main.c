@@ -22,7 +22,7 @@ int main(void)
     // initialise LUA
     lua = luaL_newstate();
     luaL_openlibs(lua);
-    _load_lua_script("scripts/console.lua");
+    _load_lua_script("scripts/main.lua");
 
     // reset global state
     g_state_reset();
