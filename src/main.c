@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "tmx.h"
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
@@ -7,6 +8,7 @@
 
 #include "global_variables.h"
 #include "g_state.h"
+#include "r_tiled.h"
 #include "w_console.h"
 
 GameState st;
@@ -27,6 +29,12 @@ int main(void)
     // reset global state
     g_state_reset();
     st.running = true;
+
+    // Load TMX test map
+    if (!r_tiled_load_map("assets/maps/rpg-sample/island.tmx")) {
+        return 1;
+    }
+
     while(st.running) {
         st.running = !WindowShouldClose();
         w_console_update();
@@ -35,10 +43,12 @@ int main(void)
             ClearBackground(DARKBLUE);
             DrawFPS(0, 0);
 
+            r_tiled_draw();
             w_console_draw();
         EndDrawing();
     }
 
+    r_tiled_unload_map();
     lua_close(lua);
     CloseWindow();
 
