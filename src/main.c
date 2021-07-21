@@ -10,13 +10,13 @@
 #include "g_player.h"
 #include "g_state.h"
 #include "r_tiled.h"
+#include "u_lua.h"
 #include "w_console.h"
 
 Camera2D camera;
 GameState st;
 lua_State *lua;
 
-bool _load_lua_script(const char *filename);
 void _camera_init(void);
 void _camera_update();
 
@@ -28,7 +28,7 @@ int main(void)
     // initialise LUA
     lua = luaL_newstate();
     luaL_openlibs(lua);
-    _load_lua_script("scripts/main.lua");
+    u_lua_dofile("scripts/main.lua");
 
     // reset global state
     g_state_reset();
@@ -86,32 +86,6 @@ int main(void)
     CloseWindow();
 
     return 0;
-}
-
-bool _load_lua_script(const char *filename)
-{
-    int result = luaL_loadfile(lua, filename);
-    char *reason_phrase = NULL;
-
-    switch (result) {
-        case LUA_OK:
-            TraceLog(LOG_INFO, "Loaded file '%s'", filename);
-            lua_pcall(lua, 0, 0, 0);
-            return true;
-        default:
-            if (result == LUA_ERRSYNTAX) reason_phrase = "Syntax error";
-            if (result == LUA_ERRMEM) reason_phrase = "Out of memory";
-            if (result == LUA_ERRFILE) reason_phrase = "File error";
-
-            TraceLog(
-                LOG_ERROR,
-                "Could not load LUA script '%s'. Reason: %s.",
-                filename,
-                reason_phrase
-            );
-
-            return false;
-    }
 }
 
 Vector2 _get_player_pos()
