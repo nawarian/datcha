@@ -27,6 +27,11 @@ void g_player_init(void)
 
 void g_player_update(void)
 {
+    Vector2 world_lim = {
+        (map->width - 1) * map->tile_width,
+        (map->height - 1) * map->tile_height
+    };
+
     st.player.coords.x = u_lua_field_get_int("player", "x");
     st.player.coords.y = u_lua_field_get_int("player", "y");
 
@@ -44,6 +49,18 @@ void g_player_update(void)
         }
     }
 
+    if (st.player.coords.x > world_lim.x) {
+        st.player.coords.x = world_lim.x;
+    } else if (st.player.coords.x < 0) {
+        st.player.coords.x = 0;
+    }
+
+    if (st.player.coords.y > world_lim.y) {
+        st.player.coords.y = world_lim.y;
+    } else if (st.player.coords.y < 0) {
+        st.player.coords.y = 0;
+    }
+
     u_lua_field_set_int("player", "x", st.player.coords.x);
     u_lua_field_set_int("player", "y", st.player.coords.y);
 }
@@ -55,7 +72,7 @@ void g_player_draw(void)
         st.player.coords.y,
         16,
         16,
-        BLUE
+        RED 
     );
 }
 
