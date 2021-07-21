@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "global_variables.h"
-#include "r_tiled.h"
+#include "g_map.h"
 
 #define LINE_THICKNESS 2.5
 
@@ -46,7 +46,7 @@ void _draw_all_layers(tmx_map *map, tmx_layer *layers);
 void _draw_all_layers(tmx_map *map, tmx_layer *layers);
 
 // Implement header functions
-bool r_tiled_load_map(const char *filename)
+bool g_map_load(const char *filename)
 {
     tmx_img_load_func = _tmx_texture_load;
     tmx_img_free_func = _tmx_texture_free;
@@ -61,18 +61,18 @@ bool r_tiled_load_map(const char *filename)
     return true;
 }
 
-void r_tiled_unload_map(void)
+void g_map_unload(void)
 {
     tmx_map_free(map);
 }
 
-void r_tiled_draw(void)
+void g_map_draw(void)
 {
     ClearBackground(_int_to_color(map->backgroundcolor));
     _draw_all_layers(map, map->ly_head);
 }
 
-tmx_object* r_tiled_object_get_by_type(const char *type)
+tmx_object* g_map_object_get_by_type(const char *type)
 {
     tmx_layer *layer = map->ly_head;
     tmx_object *object;

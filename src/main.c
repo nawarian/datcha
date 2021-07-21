@@ -7,7 +7,7 @@
 #include "global_variables.h"
 #include "g_player.h"
 #include "g_state.h"
-#include "r_tiled.h"
+#include "g_map.h"
 #include "u_lua.h"
 #include "w_console.h"
 
@@ -33,7 +33,7 @@ int main(void)
     st.running = true;
 
     // Load TMX test map
-    if (!r_tiled_load_map("assets/maps/rpg-sample/island.tmx")) {
+    if (!g_map_load("assets/maps/rpg-sample/island.tmx")) {
         return 1;
     }
 
@@ -56,7 +56,7 @@ int main(void)
             BeginMode2D(camera);
                 ClearBackground(DARKBLUE);
 
-                r_tiled_draw();
+                g_map_draw();
                 g_player_draw();
             EndMode2D();
 
@@ -79,7 +79,7 @@ int main(void)
         EndDrawing();
     }
 
-    r_tiled_unload_map();
+    g_map_unload();
     lua_close(lua);
     CloseWindow();
 

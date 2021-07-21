@@ -3,7 +3,7 @@
 
 #include "global_variables.h"
 #include "g_player.h"
-#include "r_tiled.h"
+#include "g_map.h"
 #include "u_lua.h"
 
 void g_player_init(void)
@@ -13,7 +13,7 @@ void g_player_init(void)
     st.player.coords.x = u_lua_field_get_int("player", "x");
     st.player.coords.y = u_lua_field_get_int("player", "y");
 
-    player_obj = r_tiled_object_get_by_type("start");
+    player_obj = g_map_object_get_by_type("start");
     if (player_obj == NULL) {
         TraceLog(LOG_ERROR, "No player object placed on map");
     }
