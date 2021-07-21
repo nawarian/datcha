@@ -3,41 +3,23 @@
 
 #include "global_variables.h"
 #include "g_player.h"
+#include "r_tiled.h"
 #include "u_lua.h"
 
 void g_player_init(void)
 {
+    tmx_object* player_obj;
     st.player = (Player) {{ 0, 0 }, { 16, 16 }};
     st.player.coords.x = u_lua_field_get_int("player", "x");
     st.player.coords.y = u_lua_field_get_int("player", "y");
 
-    // fetch player initial position from tmx_map
-    tmx_layer *layers = map->ly_head;
-    tmx_object *objects;
-    while (layers) {
-        if (!layers->visible || layers->type != L_OBJGR) {
-            layers = layers->next;
-            continue;
-        }
-
-        // Fetch objects
-        objects = layers->content.objgr->head;
-        while (objects) {
-            if (!objects->visible) {
-                objects = objects->next;
-                continue;
-            }
-
-            if (strcmp(objects->type, "start") == 0) {
-                st.player.coords.x = (int) objects->x - 8;
-                st.player.coords.y = (int) objects->y - 8;
-            }
-
-            objects = objects->next;
-        }
-
-        layers = layers->next;
+    player_obj = r_tiled_object_get_by_type("start");
+    if (player_obj == NULL) {
+        TraceLog(LOG_ERROR, "No player object placed on map");
     }
+
+    st.player.coords.x = (int) player_obj->x - 8;
+    st.player.coords.y = (int) player_obj->y - 8;
 
     u_lua_field_set_int("player", "x", st.player.coords.x);
     u_lua_field_set_int("player", "y", st.player.coords.y);

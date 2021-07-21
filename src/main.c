@@ -1,5 +1,4 @@
 #include "raylib.h"
-#include "tmx.h"
 #include <lualib.h>
 #include <lauxlib.h>
 #include <string.h>

@@ -2,6 +2,7 @@
 #include "tmx.h"
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "global_variables.h"
 #include "r_tiled.h"
@@ -69,6 +70,31 @@ void r_tiled_draw(void)
 {
     ClearBackground(_int_to_color(map->backgroundcolor));
     _draw_all_layers(map, map->ly_head);
+}
+
+tmx_object* r_tiled_object_get_by_type(const char *type)
+{
+    tmx_layer *layer = map->ly_head;
+    tmx_object *object;
+
+    while (layer) {
+        if (layer->type != L_OBJGR) {
+            layer = layer->next;
+            continue;
+        }
+
+        object = layer->content.objgr->head;
+        while (object) {
+            if (strcmp(object->type, type) == 0) {
+                return object;
+            }
+            object = object->next;
+        }
+
+        layer = layer->next;
+    }
+
+    return NULL;
 }
 
 // Implement private functions
