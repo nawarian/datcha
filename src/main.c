@@ -7,6 +7,7 @@
 #include <stdbool.h>
 
 #include "global_variables.h"
+#include "g_player.h"
 #include "g_state.h"
 #include "r_tiled.h"
 #include "w_console.h"
@@ -38,12 +39,17 @@ int main(void)
         return 1;
     }
 
+    g_player_init();
+
     // Camera
     _camera_init();
 
     while(st.running) {
         st.running = !WindowShouldClose();
         _camera_update();
+
+        // Update game state
+        g_player_update();
 
         // Update widgets
         w_console_update();
@@ -53,10 +59,25 @@ int main(void)
                 ClearBackground(DARKBLUE);
 
                 r_tiled_draw();
+                g_player_draw();
             EndMode2D();
 
             w_console_draw();
+
+            // Draw debug info
             DrawFPS(0, 0);
+
+            DrawText(
+                TextFormat(
+                    "Player x: %d, Player y: %d",
+                    (int) st.player.coords.x,
+                    (int) st.player.coords.y
+                ),
+                0,
+                20,
+                15,
+                WHITE
+            );
         EndDrawing();
     }
 
@@ -122,28 +143,16 @@ Vector2 _get_player_pos()
 void _camera_init(void)
 {
     camera = (Camera2D) { 0 };
-    camera.target = (Vector2) { 100, 100 };
-    camera.offset = (Vector2) { 0, 0 };
+    camera.target = st.player.coords;
+    camera.offset = (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 2 };
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
 }
 
 void _camera_update()
 {
-    camera.offset = (Vector2) { 0, 0 };
-    camera.target = _get_player_pos();
-
-    if (IsKeyDown(KEY_A)) {
-        camera.target.x -= 5;
-    } else if (IsKeyDown(KEY_D)) {
-        camera.target.x += 5;
-    }
-
-    if (IsKeyDown(KEY_W)) {
-        camera.target.y -= 5;
-    } else if (IsKeyDown(KEY_S)) {
-        camera.target.y += 5;
-    }
+    camera.offset = (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 2 };
+    camera.target = st.player.coords;
 
     if (IsKeyPressed(KEY_UP)) {
         camera.zoom += 0.3f;

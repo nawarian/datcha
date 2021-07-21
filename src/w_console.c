@@ -8,68 +8,61 @@
 #include "global_variables.h"
 #include "w_console.h"
 
-struct {
-    bool typing;
-    int cursor_pos;
-    int log_pos;
-    int scroll_pos;
-    char buff[64];
-    char log[50][64]; // last 50 messages
-} ConsoleState = { 0 };
+ConsoleState console = { 0 };
 
 void w_console_update(void)
 {
     char last_char_pressed;
 
-    ConsoleState.scroll_pos -= (int) GetMouseWheelMove();
-    if (ConsoleState.scroll_pos > 0) {
-        ConsoleState.scroll_pos = 0;
-    } else if (ConsoleState.scroll_pos <= -ConsoleState.log_pos) {
-        ConsoleState.scroll_pos = -ConsoleState.log_pos + 1;
+    console.scroll_pos -= (int) GetMouseWheelMove();
+    if (console.scroll_pos > 0) {
+        console.scroll_pos = 0;
+    } else if (console.scroll_pos <= -console.log_pos) {
+        console.scroll_pos = -console.log_pos + 1;
     }
 
     if (IsKeyPressed(KEY_ENTER)) {
         // User sent a text: handle message and clear buffer
-        if (ConsoleState.typing) {
+        if (console.typing) {
             // log message to game console
-            strcpy(ConsoleState.log[ConsoleState.log_pos++], ConsoleState.buff);
+            strcpy(console.log[console.log_pos++], console.buff);
 
             // delegate to LUA handler(s)
             lua_getglobal(lua, "onMessage");
-            lua_pushstring(lua, ConsoleState.buff);
+            lua_pushstring(lua, console.buff);
             if (lua_pcall(lua, 1, 1, 0) != 0) {
                 TraceLog(LOG_ERROR, "Lua error: %s", lua_tostring(lua, -1));
             }
 
             // clear buffer, cursor and reset scroll
-            while (ConsoleState.cursor_pos > 0) {
-                ConsoleState.buff[--ConsoleState.cursor_pos] = 0;
-                ConsoleState.scroll_pos = 0;
+            while (console.cursor_pos > 0) {
+                console.buff[--console.cursor_pos] = 0;
+                console.scroll_pos = 0;
             }
         }
 
-        ConsoleState.typing = !ConsoleState.typing;
+        console.typing = !console.typing;
     }
 
-    if (!ConsoleState.typing) {
+    if (!console.typing) {
         return;
     }
 
     last_char_pressed = GetCharPressed();
     if (last_char_pressed) {
-        ConsoleState.buff[ConsoleState.cursor_pos++] = last_char_pressed;
+        console.buff[console.cursor_pos++] = last_char_pressed;
     }
 
     if (IsKeyPressed(KEY_BACKSPACE)) {
-        ConsoleState.buff[ConsoleState.cursor_pos--] = 0;
+        console.buff[console.cursor_pos--] = 0;
     }
 
-    if (ConsoleState.cursor_pos < 0) {
-        ConsoleState.cursor_pos = 0;
+    if (console.cursor_pos < 0) {
+        console.cursor_pos = 0;
     }
 
-    if (ConsoleState.cursor_pos > 63) {
-        ConsoleState.cursor_pos = 63;
+    if (console.cursor_pos > 63) {
+        console.cursor_pos = 63;
     }
 }
 
@@ -90,7 +83,7 @@ void w_console_draw(void)
     };
     
     // If typing, increase the console's height
-    if (ConsoleState.typing) {
+    if (console.typing) {
         h = sh * .3;
         log_area.y = sh - h + 1;
         log_area.height = h - 2 - (sh - input_box_y);
@@ -105,11 +98,11 @@ void w_console_draw(void)
 
     // Draw message log
     BeginScissorMode(log_area.x, log_area.y, log_area.width, log_area.height);
-    for (int i = ConsoleState.log_pos, j = 0; i >= 0; --i, ++j) {
+    for (int i = console.log_pos, j = 0; i >= 0; --i, ++j) {
         DrawText(
-            ConsoleState.log[i],
+            console.log[i],
             1 + margin_x,
-            input_box_y - ((j + ConsoleState.scroll_pos) * font_size),
+            input_box_y - ((j + console.scroll_pos) * font_size),
             font_size,
             WHITE
         );
@@ -121,7 +114,7 @@ void w_console_draw(void)
     DrawRectangleLines(1, input_box_y, w - 2, (h * .2) - 1, c_border);
     
     // Draw cursor
-    int cursor_x = MeasureText(ConsoleState.buff, font_size) + 4 + margin_x;
+    int cursor_x = MeasureText(console.buff, font_size) + 4 + margin_x;
     DrawRectangle(
         cursor_x,
         sh - (h * .2),
@@ -131,7 +124,7 @@ void w_console_draw(void)
     );
 
     DrawText(
-        ConsoleState.buff,
+        console.buff,
         4 + margin_x,
         sh - (h * .2),
         font_size,
