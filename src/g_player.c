@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include <string.h>
 
 #include "global_variables.h"
 #include "g_player.h"
@@ -10,6 +11,36 @@ void g_player_init(void)
 {
     st.player = (Player) {{ 0, 0 }, { 16, 16 }};
     _sync_player_state_lua();
+
+    // fetch player initial position from tmx_map
+    tmx_layer *layers = map->ly_head;
+    tmx_object *objects;
+    while (layers) {
+        if (!layers->visible || layers->type != L_OBJGR) {
+            layers = layers->next;
+            continue;
+        }
+
+        // Fetch objects
+        objects = layers->content.objgr->head;
+        while (objects) {
+            if (!objects->visible) {
+                objects = objects->next;
+                continue;
+            }
+
+            if (strcmp(objects->type, "start") == 0) {
+                st.player.coords.x = (int) objects->x - 8;
+                st.player.coords.y = (int) objects->y - 8;
+            }
+
+            objects = objects->next;
+        }
+
+        layers = layers->next;
+    }
+
+    _update_player_state_lua();
 }
 
 void g_player_update(void)
