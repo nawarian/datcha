@@ -1,6 +1,5 @@
 #include "raylib.h"
 #include "tmx.h"
-#include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
 #include <string.h>
@@ -86,32 +85,6 @@ int main(void)
     CloseWindow();
 
     return 0;
-}
-
-Vector2 _get_player_pos()
-{
-    Vector2 pos = { 0 };
-
-    lua_getglobal(lua, "player");
-    if (lua_istable(lua, -1)) {
-        lua_getfield(lua, -1, "x");
-        lua_getfield(lua, -2, "y");
-
-        // y
-        pos.y = lua_tointeger(lua, -1);
-        lua_remove(lua, -1);
-
-        // x
-        pos.x = lua_tointeger(lua, -1);
-        lua_remove(lua, -1);
-    } else {
-        TraceLog(LOG_ERROR, "Could not fetch LUA's global variable 'player'");
-    }
-
-    // clean up stack
-    lua_remove(lua, -1);
-
-    return pos;
 }
 
 void _camera_init(void)
