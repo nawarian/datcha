@@ -92,7 +92,7 @@ void _camera_init(void)
     camera.target = st.player.coords;
     camera.offset = (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 2 };
     camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
+    camera.zoom = 2.0f;
 }
 
 void _camera_update()
