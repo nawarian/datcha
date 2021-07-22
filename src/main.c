@@ -33,7 +33,7 @@ int main(void)
     st.running = true;
 
     // Load TMX test map
-    if (!g_map_load("assets/maps/rpg-sample/island.tmx")) {
+    if (!g_map_load("assets/maps/rpg-sample/island_bigger.tmx")) {
         return 1;
     }
 
