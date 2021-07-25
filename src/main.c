@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #include "global_variables.h"
+#include "macros.h"
 #include "g_player.h"
 #include "g_state.h"
 #include "g_map.h"
@@ -14,6 +15,7 @@
 Camera2D camera;
 GameState st;
 lua_State *lua;
+Font font;
 
 void _camera_init(void);
 void _camera_update();
@@ -22,6 +24,9 @@ int main(void)
 {
     InitWindow(800, 600, "Datcha - PoC");
     SetTargetFPS(60);
+
+    // load utf-8 compatible font
+    font = LoadFont("assets/fonts/dejavu.fnt");
 
     // initialise LUA
     lua = luaL_newstate();
@@ -65,7 +70,7 @@ int main(void)
             // Draw debug info
             DrawFPS(0, 0);
 
-            DrawText(
+            DrawTextUTF8(
                 TextFormat(
                     "Player x: %d, Player y: %d",
                     (int) st.player.coords.x,

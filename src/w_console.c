@@ -6,13 +6,16 @@
 #include <lauxlib.h>
 
 #include "global_variables.h"
+#include "macros.h"
 #include "w_console.h"
 
 ConsoleState console = { 0 };
 
 void w_console_update(void)
 {
-    char last_char_pressed;
+    const char *last_unicode_char_pressed;
+    int last_char_pressed
+        , char_length;
 
     console.scroll_pos -= (int) GetMouseWheelMove();
     if (console.scroll_pos > 0) {
@@ -67,9 +70,13 @@ void w_console_update(void)
 
     last_char_pressed = GetCharPressed();
     if (last_char_pressed) {
-        console.buff[console.cursor_pos++] = last_char_pressed;
+        last_unicode_char_pressed = CodepointToUtf8(last_char_pressed, &char_length);
+
+        TextCopy(console.buff + console.cursor_pos, last_unicode_char_pressed);
+        console.cursor_pos += char_length;
     }
 
+    // TODO: fix unicode issue
     if (IsKeyPressed(KEY_BACKSPACE)) {
         console.buff[console.cursor_pos--] = 0;
     }
@@ -116,7 +123,7 @@ void w_console_draw(void)
     // Draw message log
     BeginScissorMode(log_area.x, log_area.y, log_area.width, log_area.height);
     for (int i = console.log_pos, j = 0; i >= 0; --i, ++j) {
-        DrawText(
+        DrawTextUTF8(
             console.log[i],
             1 + margin_x,
             input_box_y - ((j + console.scroll_pos) * font_size),
@@ -140,7 +147,7 @@ void w_console_draw(void)
         WHITE
     );
 
-    DrawText(
+    DrawTextUTF8(
         console.buff,
         4 + margin_x,
         sh - (h * .2),
