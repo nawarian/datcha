@@ -9,7 +9,7 @@
 void g_player_init(void)
 {
     tmx_object* player_obj;
-    st.player = (Player) {{ 0, 0 }, { 16, 16 }};
+    st.player = (Player) {{ 0, 0 }, { 4, 4 }};
     st.player.coords.x = u_lua_field_get_int("player", "x");
     st.player.coords.y = u_lua_field_get_int("player", "y");
 
