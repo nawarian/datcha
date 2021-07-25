@@ -6,6 +6,7 @@
 
 #include "global_variables.h"
 #include "g_map.h"
+#include "u_lua.h"
 
 #define LINE_THICKNESS 2.5
 
@@ -48,6 +49,11 @@ void _draw_all_layers(tmx_map *map, tmx_layer *layers);
 // Implement header functions
 bool g_map_load(const char *filename)
 {
+    tmx_object *npcs;
+    tmx_property *script_prop;
+    unsigned int npc_count = 0;
+    char *script_path,
+         *global_variable_name;
     tmx_img_load_func = _tmx_texture_load;
     tmx_img_free_func = _tmx_texture_free;
 
@@ -56,6 +62,54 @@ bool g_map_load(const char *filename)
     if (map == NULL) {
         tmx_perror("Could not load map");
         return false;
+    }
+
+    // Load map NPCs
+    npcs = g_map_object_get_by_type("npc", &npc_count);
+    while (npc_count > 0) {
+        script_prop = tmx_get_property(npcs->properties, "script");
+        if (script_prop == NULL) {
+            TraceLog(
+                LOG_ERROR,
+                "Found NPC '%s' at (%d, %d) without a 'script' property. Every NPC must have a script.",
+                npcs->name,
+                (int) npcs->x,
+                (int) npcs->y
+            );
+        }
+        script_path = script_prop->value.string;
+
+        script_prop = tmx_get_property(npcs->properties, "global_name");
+        if (script_prop == NULL) {
+            TraceLog(
+                LOG_ERROR,
+                "Found NPC '%s' at (%d, %d) without a 'global_name' property. Every NPC must have a global_name.",
+                npcs->name,
+                (int) npcs->x,
+                (int) npcs->y
+            );
+        }
+        global_variable_name = script_prop->value.string;
+
+        TraceLog(
+            LOG_INFO,
+            "Found NPC '%s' at (%d, %d) with script '%s' initialised in global variable '%s'",
+            npcs->name,
+            (int) npcs->x,
+            (int) npcs->y,
+            script_path,
+            global_variable_name
+        );
+
+        // Load NPC file
+        u_lua_dofile(script_path);
+
+        // Adjust NPC's coordinates
+        u_lua_field_set_int(global_variable_name, "x", (int) npcs->x);
+        u_lua_field_set_int(global_variable_name, "y", (int) npcs->y);
+
+        ++npcs;
+        --npc_count;
     }
 
     return true;
@@ -72,10 +126,11 @@ void g_map_draw(void)
     _draw_all_layers(map, map->ly_head);
 }
 
-tmx_object* g_map_object_get_by_type(const char *type)
+tmx_object* g_map_object_get_by_type(const char *type, unsigned int *ret_count)
 {
     tmx_layer *layer = map->ly_head;
-    tmx_object *object;
+    tmx_object *object, *result;
+    unsigned int i = 0;
 
     while (layer) {
         if (layer->type != L_OBJGR) {
@@ -85,8 +140,8 @@ tmx_object* g_map_object_get_by_type(const char *type)
 
         object = layer->content.objgr->head;
         while (object) {
-            if (strcmp(object->type, type) == 0) {
-                return object;
+            if (object->type != NULL && strcmp(object->type, type) == 0) {
+                ++*ret_count;
             }
             object = object->next;
         }
@@ -94,7 +149,26 @@ tmx_object* g_map_object_get_by_type(const char *type)
         layer = layer->next;
     }
 
-    return NULL;
+    layer = map->ly_head;
+    result = malloc(sizeof(tmx_object) * *ret_count);
+    while (layer) {
+        if (layer->type != L_OBJGR) {
+            layer = layer->next;
+            continue;
+        }
+
+        object = layer->content.objgr->head;
+        while (object) {
+            if (object->type != NULL && strcmp(object->type, type) == 0) {
+                result[i++] = *object;
+            }
+            object = object->next;
+        }
+
+        layer = layer->next;
+    }
+
+    return result;
 }
 
 // Implement private functions

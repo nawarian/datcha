@@ -8,13 +8,14 @@
 
 void g_player_init(void)
 {
+    unsigned int player_found = 0;
     tmx_object* player_obj;
     st.player = (Player) {{ 0, 0 }, { 4, 4 }};
     st.player.coords.x = u_lua_field_get_int("player", "x");
     st.player.coords.y = u_lua_field_get_int("player", "y");
 
-    player_obj = g_map_object_get_by_type("start");
-    if (player_obj == NULL) {
+    player_obj = g_map_object_get_by_type("start", &player_found);
+    if (player_found == 0) {
         TraceLog(LOG_ERROR, "No player object placed on map");
     }
 
