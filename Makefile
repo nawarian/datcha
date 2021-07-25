@@ -4,7 +4,7 @@ MKDIR=mkdir -p
 
 # Flags
 LIBS=lua raylib zlib
-CFLAGS=`pkg-config --cflags $(LIBS)` -W -Wall
+CFLAGS=`pkg-config --cflags $(LIBS)` -W -Wall -g
 LDFLAGS=`pkg-config --libs $(LIBS)` -ltmx -lxml2
 
 # Compiler
