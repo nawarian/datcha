@@ -24,9 +24,6 @@ void w_console_update(void)
     if (IsKeyPressed(KEY_ENTER)) {
         // User sent a text: handle message and clear buffer
         if (console.typing) {
-            // log message to game console
-            strcpy(console.log[console.log_pos++], console.buff);
-
             // delegate to LUA handler(s)
             lua_getglobal(lua, "onMessage");
             lua_pushstring(lua, console.buff);
@@ -43,6 +40,26 @@ void w_console_update(void)
 
         console.typing = !console.typing;
     }
+
+    // Fetch last 50 messages from LUA
+    lua_getglobal(lua, "chat_global");
+    console.log_pos = 0;
+    if (lua_istable(lua, -1)) {
+        lua_getfield(lua, -1, "log");
+        if (lua_istable(lua, -1)) {
+            lua_pushnil(lua);
+
+            while (lua_next(lua, -2)) {
+                strcpy(console.log[console.log_pos++], lua_tostring(lua, -1));
+
+                lua_pop(lua, 1);
+            }
+            lua_pop(lua, -1);
+        }
+
+        lua_pop(lua, -1);
+    }
+    lua_pop(lua, -1);
 
     if (!console.typing) {
         return;
