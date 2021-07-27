@@ -6,6 +6,9 @@
 typedef struct Player {
     Vector2 coords;
     Vector2 velocity;
+    unsigned int
+        hp
+        , max_hp;
 } Player;
 
 void g_player_init(void);
