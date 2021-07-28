@@ -1,4 +1,6 @@
 npc_maria = Npc:new("Maria", 0, 0)
+npc_maria.hp = 50
+npc_maria.max_hp = 50
 
 local conversation = 0
 

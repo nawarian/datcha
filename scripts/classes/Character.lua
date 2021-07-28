@@ -8,15 +8,13 @@ Character = {
 Character.__index = Character
 
 function Character:new(name, x, y, hp, max_hp)
-    character = character or { }
-    setmetatable(character, self)
-    character.__index = self
+    local self = setmetatable({}, Character);
 
     self.name = name
     self.x = x
     self.y = y
 
-    return character
+    return self
 end
 
 function Character:say(chat, text)
