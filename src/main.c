@@ -7,6 +7,7 @@
 #include "global_variables.h"
 #include "macros.h"
 #include "g_player.h"
+#include "g_npc.h"
 #include "g_state.h"
 #include "g_map.h"
 #include "u_lua.h"
@@ -16,6 +17,7 @@ Camera2D camera;
 GameState st;
 lua_State *lua;
 Font font;
+Npc npc_registry[100] = { 0 };
 
 void _camera_init(void);
 void _camera_update();
@@ -43,6 +45,7 @@ int main(void)
     }
 
     g_player_init();
+    g_npc_init();
 
     // Camera
     _camera_init();
@@ -53,6 +56,7 @@ int main(void)
 
         // Update game state
         g_player_update();
+        g_npc_update();
 
         // Update widgets
         w_console_update();
@@ -62,6 +66,7 @@ int main(void)
                 ClearBackground(DARKBLUE);
 
                 g_map_draw();
+                g_npc_draw();
                 g_player_draw();
             EndMode2D();
 
