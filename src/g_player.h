@@ -4,6 +4,7 @@
 #include "raylib.h"
 
 typedef struct Player {
+    const char *name;
     Vector2 coords;
     Vector2 velocity;
     unsigned int

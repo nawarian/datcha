@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "global_variables.h"
+#include "macros.h"
 #include "g_player.h"
 #include "g_map.h"
 #include "u_lua.h"
@@ -10,7 +11,8 @@ void g_player_init(void)
 {
     unsigned int player_found = 0;
     tmx_object* player_obj;
-    st.player = (Player) {{ 0, 0 }, { 4, 4 }, 0, 0};
+    st.player = (Player) {"", { 0, 0 }, { 4, 4 }, 0, 0};
+    st.player.name = u_lua_field_get_string("player", "name");
     st.player.coords.x = u_lua_field_get_int("player", "x");
     st.player.coords.y = u_lua_field_get_int("player", "y");
 
@@ -89,6 +91,13 @@ void g_player_draw(void)
         hp_bar_color = GREEN;
     }
 
+    DrawTextUTF8(
+        st.player.name,
+        st.player.coords.x - (MeasureTextUTF8(st.player.name, 8).x / 4),
+        st.player.coords.y - 16,
+        8,
+        WHITE
+    );
     DrawRectangle(
         st.player.coords.x,
         st.player.coords.y - 5,

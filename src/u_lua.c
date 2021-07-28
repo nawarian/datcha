@@ -83,3 +83,20 @@ void u_lua_field_set_int(const char *table, const char *field, int val)
     lua_remove(lua, -1);
 }
 
+const char* u_lua_field_get_string(const char *table, const char *field)
+{
+    const char *result = "";
+
+    lua_getglobal(lua, table);
+    if (lua_istable(lua, -1)) {
+        lua_getfield(lua, -1, field);
+        result = lua_tostring(lua, -1);
+
+        lua_pop(lua, 1);
+    }
+
+    lua_pop(lua, 1);
+
+    return result;
+}
+
