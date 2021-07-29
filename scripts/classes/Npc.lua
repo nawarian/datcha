@@ -3,12 +3,12 @@ Npc.__index = Npc
 
 global_npc_registry = {}
 
-function Npc:new(name, x, y)
+function Npc:new(name)
     local self = setmetatable({}, Npc)
 
     self.name = name
-    self.x = x
-    self.y = y
+    self.x = 0
+    self.y = 0
 
     global_npc_registry[name] = self
 
