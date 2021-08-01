@@ -24,7 +24,7 @@ void _camera_update();
 
 int main(void)
 {
-    InitWindow(800, 600, "Datcha - PoC");
+    InitWindow(1440, 1080, "Datcha - PoC");
     SetTargetFPS(60);
 
     // load utf-8 compatible font
@@ -74,18 +74,6 @@ int main(void)
 
             // Draw debug info
             DrawFPS(0, 0);
-
-            DrawTextUTF8(
-                TextFormat(
-                    "Player x: %d, Player y: %d",
-                    (int) st.player.coords.x,
-                    (int) st.player.coords.y
-                ),
-                0,
-                20,
-                15,
-                WHITE
-            );
         EndDrawing();
     }
 
@@ -102,7 +90,7 @@ void _camera_init(void)
     camera.target = st.player.coords;
     camera.offset = (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 2 };
     camera.rotation = 0.0f;
-    camera.zoom = 2.0f;
+    camera.zoom = 2.5f;
 }
 
 void _camera_update()
