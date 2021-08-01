@@ -6,8 +6,8 @@ typedef struct ConsoleState {
     int cursor_pos;
     int log_pos;
     int scroll_pos;
-    char buff[64];
-    char log[50][64]; // last 50 messages
+    char buff[1024];
+    char log[50][1024]; // last 50 messages
 } ConsoleState;
 
 void w_console_update(void);
